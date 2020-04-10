@@ -1,12 +1,12 @@
 import React from "react";
-import SHOP_DATA from "./ShopData.js";
+import SHOP_DATA from "../assests/ShopData.js";
 import CollectionPreview from "../components/CollectionPreview.component.jsx";
 
 class ShopPage extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      collections: SHOP_DATA
+      collections: SHOP_DATA,
     };
   }
 
