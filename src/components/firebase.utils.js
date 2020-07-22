@@ -10,7 +10,7 @@ const config = {
   storageBucket: "styleit-db.appspot.com",
   messagingSenderId: "436569287622",
   appId: "1:436569287622:web:cdf428f05d905b1765a0c7",
-  measurementId: "G-3NSZHR1W5W"
+  measurementId: "G-3NSZHR1W5W",
 };
 
 export const createUserProfileDocument = async (userAuth, additionalData) => {
@@ -29,13 +29,44 @@ export const createUserProfileDocument = async (userAuth, additionalData) => {
         displayName,
         email,
         createdAt,
-        ...additionalData
+        ...additionalData,
       });
     } catch (error) {
       console.log("Error creating user: ", error.message);
     }
   }
   return userRef;
+};
+
+export const addCollectionsAndDocuments = async (
+  collectionKey,
+  ObjectsToAdd
+) => {
+  const collectionRef = firestore.collection(collectionKey);
+  const batch = firestore.batch();
+  ObjectsToAdd.forEach((obj) => {
+    const newDocRef = collectionRef.doc();
+    batch.set(newDocRef, obj);
+  });
+
+  return await batch.commit();
+};
+
+export const convertCollectionsSnapshotToMap = (collectionsSnapshot) => {
+  const transformedCollections = collectionsSnapshot.docs.map((docSnapshot) => {
+    const { title, items } = docSnapshot.data();
+
+    return {
+      id: docSnapshot.id,
+      routeName: encodeURI(title.toLowerCase()),
+      title,
+      items,
+    };
+  });
+  return transformedCollections.reduce((accumulator, collection) => {
+    accumulator[collection.title.toLowerCase()] = collection;
+    return accumulator;
+  }, {});
 };
 
 firebase.initializeApp(config);
